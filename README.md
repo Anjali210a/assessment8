@@ -6,6 +6,8 @@ This project is a simple Java-based web application that allows users to:
 
 ## Features
 
+![](src/9e6592c0-d863-4a07-b45f-1e8bf28894df.jpg)
+
 ### ✅ Merge PDFs
 - Upload multiple PDF files.
 - Merge them into a single PDF document.
