@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PDF Merger & Splitter</title>
+</head>
+<body>
+  <h1>Merge PDFs</h1>
+  <form id="mergeForm" enctype="multipart/form-data">
+    <input type="file" name="files" multiple>
+    <button type="submit">Merge</button>
+  </form>
+
+  <h1>Split PDF</h1>
+  <form id="splitForm" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="text" name="ranges" placeholder="e.g., 1-2,3-5">
+    <button type="submit">Split</button>
+  </form>
+
+  <script>
+    document.getElementById('mergeForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const response = await fetch('/pdf/merge', {
+        method: 'POST',
+        body: formData
+      });
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "merged.pdf";
+      link.click();
+    }
+
+    document.getElementById('splitForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const ranges = formData.get("ranges").split(',');
+      formData.delete("ranges");
+      ranges.forEach(r => formData.append("ranges", r));
+
+      const response = await fetch('/pdf/split', {
+        method: 'POST',
+        body: formData
+      });
+
+      const blobs = await response.json();
+      blobs.forEach((blobData, i) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([blobData]));
+        link.download = `part${i + 1}.pdf`;
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
